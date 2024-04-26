@@ -3,28 +3,39 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Store {
     address public owner;
+    struct Product {
+        address seller;
+        uint256 productId;
+        string productName;
+        uint256 price;
+        uint256 stock;
+    }
 
     constructor() {
         owner = msg.sender;
     }
 
-    // 賣家 => 商品編號 => 商品庫存
-    mapping(address => mapping(uint256 => uint256)) public inventory;
-    // 賣家 => 商品編號 => 商品價格
-    mapping(address => mapping(uint256 => uint256)) public prices;
+    // // 賣家 => 商品編號 => 商品庫存
+    // mapping(address => mapping(uint256 => uint256)) public inventory;
+    // // 賣家 => 商品編號 => 商品價格
+    // mapping(address => mapping(uint256 => uint256)) public prices;
     // 賣家帳戶餘額
     mapping(address => uint256) public balances;
+
+    mapping(uint256 => Product) public products;
+    uint256 public productCount = 0;
 
     // 紀錄監聽重要事件
     event ProductAdd(
         address indexed seller,
-        uint256 indexed productId,
+        string indexed productName,
         uint256 price,
         uint256 stock
     );
     event ProductUpdate(
         address indexed seller,
         uint256 indexed productId,
+        string indexed productName,
         uint256 price,
         uint256 stock
     );
@@ -43,13 +54,19 @@ contract Store {
     }
 
     function addProduct(
-        uint256 productId,
+        string productName,
         uint256 price,
         uint256 stock
     ) public {
-        inventory[msg.sender][productId] = stock;
-        prices[msg.sender][productId] = price;
-        emit ProductAdd(msg.sender, productId, price, stock);
+        productCount++;
+        products[productCount] = Product(
+            msg.sender,
+            productCount,
+            productName,
+            price,
+            stock
+        );
+        emit ProductAdd(msg.sender, productCount, productName, price, stock);
     }
 
     function updateProduct(
