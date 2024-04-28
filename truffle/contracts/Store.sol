@@ -9,25 +9,26 @@ contract Store {
         string productName;
         uint256 price;
         uint256 stock;
+        bool onSell;
     }
 
     constructor() {
         owner = msg.sender;
     }
 
-    // // 賣家 => 商品編號 => 商品庫存
-    // mapping(address => mapping(uint256 => uint256)) public inventory;
-    // // 賣家 => 商品編號 => 商品價格
-    // mapping(address => mapping(uint256 => uint256)) public prices;
     // 賣家帳戶餘額
     mapping(address => uint256) public balances;
 
+    // 紀錄商品列表
     mapping(uint256 => Product) public products;
-    uint256 public productCount = 0;
+
+    // 紀錄商品編號
+    uint256 public productIds = 0;
 
     // 紀錄監聽重要事件
     event ProductAdd(
         address indexed seller,
+        uint256 indexed productId,
         string indexed productName,
         uint256 price,
         uint256 stock
@@ -53,37 +54,44 @@ contract Store {
         _;
     }
 
+    modifier checkIsSeller(address productSeller, address sender) {
+        require(productSeller == sender, "Product doesn't belong to sender");
+        _;
+    }
+
     function addProduct(
-        string productName,
+        string memory productName,
         uint256 price,
         uint256 stock
     ) public {
-        productCount++;
-        products[productCount] = Product(
+        productIds++;
+        products[productIds] = Product(
             msg.sender,
-            productCount,
+            productIds,
             productName,
             price,
-            stock
+            stock,
+            true
         );
-        emit ProductAdd(msg.sender, productCount, productName, price, stock);
+        emit ProductAdd(msg.sender, productIds, productName, price, stock);
     }
 
     function updateProduct(
         uint256 productId,
+        string memory productName,
         uint256 price,
         uint256 stock
-    ) public {
-        require(inventory[msg.sender][productId] > 0, "Product not exist");
-        inventory[msg.sender][productId] = stock;
-        prices[msg.sender][productId] = price;
-        emit ProductUpdate(msg.sender, productId, price, stock);
+    ) public checkIsSeller(products[productId].seller, msg.sender) {
+        products[productId].productName = productName;
+        products[productId].stock = stock;
+        products[productId].price = price;
+        emit ProductUpdate(msg.sender, productId, productName, price, stock);
     }
 
-    function removeProduct(uint256 productId) public {
-        require(inventory[msg.sender][productId] > 0, "Product not exist");
-        inventory[msg.sender][productId] = 0;
-        prices[msg.sender][productId] = 0;
+    function removeProduct(
+        uint256 productId
+    ) public checkIsSeller(products[productId].seller, msg.sender) {
+        products[productId].onSell = false;
         emit ProductRemove(msg.sender, productId);
     }
 
@@ -93,21 +101,21 @@ contract Store {
         uint256 quantity
     ) public payable {
         require(
-            inventory[seller][productId] > quantity,
+            products[productId].stock > quantity,
             "Insufficient quantity of product"
         );
         require(
-            msg.value >= prices[seller][productId] * quantity,
+            msg.value >= products[productId].price * quantity,
             "Insufficient funds"
         );
-        balances[seller] += prices[seller][productId] * quantity;
-        inventory[seller][productId] -= quantity;
+        balances[seller] += products[productId].price * quantity;
+        products[productId].stock -= quantity;
         emit ProductBuy(
             msg.sender,
             seller,
             productId,
-            prices[seller][productId],
-            inventory[seller][productId]
+            products[productId].price,
+            quantity
         );
     }
 
@@ -116,5 +124,17 @@ contract Store {
         uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
         payable(msg.sender).transfer(amount);
+    }
+
+    function getAllProducts() public view returns (Product[] memory) {
+        Product[] memory allProducts = new Product[](productIds);
+
+        for (uint256 i = 1; i <= productIds; i++) {
+            if (products[i].onSell) {
+                allProducts[i - 1] = products[i];
+            }
+        }
+
+        return allProducts;
     }
 }
