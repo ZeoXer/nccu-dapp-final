@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
-const AddProductInput = ({ label, type, value, onChange, min }) => {
+const AddProductInput = ({ label, type, value, onChange, min, step }) => {
   return (
     <div className="mb-4">
       <label className="text-xl me-2">{label}</label>
@@ -12,6 +12,7 @@ const AddProductInput = ({ label, type, value, onChange, min }) => {
         onChange={onChange}
         className="border rounded-md text-lg px-2 py-1"
         min={min}
+        step={step}
       />
     </div>
   );
@@ -39,11 +40,15 @@ const AddProduct = () => {
     await contract.methods
       .addProduct(productName, productPrice, productStock)
       .send({ from: accounts[0] });
+    closeModal();
   };
 
   const AddProductButton = () => {
     return (
-      <button className="bg-sky-300 text-white text-xl px-4 py-3 rounded-md" onClick={openModal}>
+      <button
+        className="bg-sky-300 text-white text-xl px-4 py-3 rounded-md"
+        onClick={openModal}
+      >
         新增商品
       </button>
     );
@@ -82,6 +87,7 @@ const AddProduct = () => {
                   value={productPrice}
                   onChange={(e) => setProductPrice(e.target.value)}
                   min={0}
+                  step={0.01}
                 />
                 <AddProductInput
                   label="商品庫存"
@@ -90,7 +96,12 @@ const AddProduct = () => {
                   onChange={(e) => setProductStock(e.target.value)}
                   min={0}
                 />
-                <button onClick={addProduct} className="bg-sky-300 px-4 py-2 text-white rounded-md text-xl">新增</button>
+                <button
+                  onClick={addProduct}
+                  className="bg-sky-300 px-4 py-2 text-white rounded-md text-xl"
+                >
+                  新增
+                </button>
               </div>
             </div>
           </div>
