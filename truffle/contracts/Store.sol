@@ -128,13 +128,29 @@ contract Store {
 
     function getAllProducts() public view returns (Product[] memory) {
         Product[] memory allProducts = new Product[](productIds);
+        uint256 count = 0;
 
         for (uint256 i = 1; i <= productIds; i++) {
             if (products[i].onSell) {
-                allProducts[i - 1] = products[i];
+                allProducts[count] = products[i];
+                count++;
             }
         }
 
         return allProducts;
+    }
+
+    function getSellerProducts() public view returns (Product[] memory) {
+        Product[] memory sellerProducts = new Product[](productIds);
+        uint256 count = 0;
+
+        for (uint256 i = 1; i <= productIds; i++) {
+            if (products[i].seller == msg.sender) {
+                sellerProducts[count] = products[i];
+                count++;
+            }
+        }
+
+        return sellerProducts;
     }
 }
