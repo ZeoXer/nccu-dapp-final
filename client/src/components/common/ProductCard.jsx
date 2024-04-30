@@ -1,5 +1,6 @@
 import { useState } from "react";
 import clsx from "clsx";
+import { config } from "../../config";
 
 const ProductCard = ({ product }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -24,7 +25,10 @@ const ProductCard = ({ product }) => {
         <div>
           <h3 className="text-3xl font-semibold">{product.productName}</h3>
           <p className="text-xl">
-            價格 <span className="text-2xl italic">{product.price}</span>
+            價格{" "}
+            <span className="text-2xl italic">
+              {product.price / config.PRICE_BASE}
+            </span>
           </p>
           <p className="text-xl">
             庫存 <span className="text-2xl italic">{product.stock}</span>

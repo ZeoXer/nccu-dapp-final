@@ -1,6 +1,6 @@
 import { useEth } from "../../contexts/EthContext";
 import { useCallback, useEffect, useState } from "react";
-import ProductCard from "./ProductCard";
+import ProductCard from "../common/ProductCard";
 
 const ProductMain = () => {
   const [products, setProducts] = useState([]);

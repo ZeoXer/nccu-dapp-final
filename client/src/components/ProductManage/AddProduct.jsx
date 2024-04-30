@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { config } from "../../config";
 
 const AddProductInput = ({ label, type, value, onChange, min, step }) => {
   return (
@@ -37,10 +38,14 @@ const AddProduct = () => {
   };
 
   const addProduct = async () => {
+    const productPriceToStored = productPrice * config.PRICE_BASE;
+
     await contract.methods
-      .addProduct(productName, productPrice, productStock)
+      .addProduct(productName, productPriceToStored, productStock)
       .send({ from: accounts[0] });
+
     closeModal();
+    window.location.reload();
   };
 
   const AddProductButton = () => {
