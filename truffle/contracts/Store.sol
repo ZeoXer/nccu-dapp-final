@@ -40,7 +40,11 @@ contract Store {
         uint256 price,
         uint256 stock
     );
-    event ProductRemove(address indexed seller, uint256 indexed productId);
+    event ProductToggleSold(
+        address indexed seller,
+        uint256 indexed productId,
+        bool onSell
+    );
     event ProductBuy(
         address indexed buyer,
         address indexed seller,
@@ -88,11 +92,17 @@ contract Store {
         emit ProductUpdate(msg.sender, productId, productName, price, stock);
     }
 
-    function removeProduct(
+    function toggleSoldProduct(
         uint256 productId
-    ) public checkIsSeller(products[productId].seller, msg.sender) {
-        products[productId].onSell = false;
-        emit ProductRemove(msg.sender, productId);
+    )
+        public
+        checkIsSeller(products[productId].seller, msg.sender)
+        returns (bool)
+    {
+        bool isOnSell = products[productId].onSell;
+        products[productId].onSell = !isOnSell;
+        emit ProductToggleSold(msg.sender, productId, isOnSell);
+        return !isOnSell;
     }
 
     function buyProduct(
@@ -131,7 +141,7 @@ contract Store {
         uint256 count = 0;
 
         for (uint256 i = 1; i <= productIds; i++) {
-            if (products[i].onSell) {
+            if (products[i].onSell && products[i].seller != msg.sender) {
                 allProducts[count] = products[i];
                 count++;
             }
