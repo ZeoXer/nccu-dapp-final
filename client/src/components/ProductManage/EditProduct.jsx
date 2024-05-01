@@ -26,7 +26,7 @@ const EditProduct = ({ product }) => {
     product.price / config.PRICE_BASE
   );
   const [productStock, setProductStock] = useState(product.stock);
-
+  
   const {
     state: { contract, accounts },
   } = useEth();

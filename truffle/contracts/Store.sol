@@ -99,10 +99,10 @@ contract Store {
         checkIsSeller(products[productId].seller, msg.sender)
         returns (bool)
     {
+        products[productId].onSell = !products[productId].onSell;
         bool isOnSell = products[productId].onSell;
-        products[productId].onSell = !isOnSell;
         emit ProductToggleSold(msg.sender, productId, isOnSell);
-        return !isOnSell;
+        return isOnSell;
     }
 
     function buyProduct(
