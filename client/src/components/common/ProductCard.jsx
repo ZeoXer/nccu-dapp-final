@@ -2,7 +2,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import { config } from "../../config";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, actionBtn }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const getRandomImgUrl = () => {
@@ -34,9 +34,7 @@ const ProductCard = ({ product }) => {
             庫存 <span className="text-2xl italic">{product.stock}</span>
           </p>
         </div>
-        <button className="bg-sky-300 text-white text-xl px-4 py-3 rounded-md">
-          購買
-        </button>
+        {actionBtn}
       </div>
     </div>
   );
