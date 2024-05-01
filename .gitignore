@@ -12,6 +12,7 @@ client/*/src/contracts
 
 # Testing
 coverage
+truffle/truffle-config.js
 
 # Env
 .env
