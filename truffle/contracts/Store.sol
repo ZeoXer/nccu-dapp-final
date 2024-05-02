@@ -40,11 +40,7 @@ contract Store {
         uint256 price,
         uint256 stock
     );
-    event ProductToggleSold(
-        address indexed seller,
-        uint256 indexed productId,
-        bool onSell
-    );
+    event ProductToggleSold(address indexed seller, uint256 indexed productId);
     event ProductBuy(
         address indexed buyer,
         address indexed seller,
@@ -94,15 +90,9 @@ contract Store {
 
     function toggleSoldProduct(
         uint256 productId
-    )
-        public
-        checkIsSeller(products[productId].seller, msg.sender)
-        returns (bool)
-    {
+    ) public checkIsSeller(products[productId].seller, msg.sender) {
         products[productId].onSell = !products[productId].onSell;
-        bool isOnSell = products[productId].onSell;
-        emit ProductToggleSold(msg.sender, productId, isOnSell);
-        return isOnSell;
+        emit ProductToggleSold(msg.sender, productId);
     }
 
     function buyProduct(

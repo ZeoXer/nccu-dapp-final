@@ -20,10 +20,8 @@ const ProductManage = () => {
 
   const toggleSoldProduct = async (id) => {
     if (!contract) return;
-    const response = await contract.methods
-      .toggleSoldProduct(id)
-      .call({ from: accounts[0] });
-    console.log(response);
+    await contract.methods.toggleSoldProduct(id).send({ from: accounts[0] });
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -43,7 +41,7 @@ const ProductManage = () => {
               className="bg-orange-300 text-white text-xl px-4 py-3 rounded-md"
               onClick={() => toggleSoldProduct(product.productId)}
             >
-              下架
+              {product.onSell ? "下架" : "上架"}
             </button>
           </div>
         }
