@@ -1,6 +1,7 @@
 import { useEth } from "../../contexts/EthContext";
 import { useCallback, useEffect, useState } from "react";
 import ProductCard from "../common/ProductCard";
+import BuyProduct from "./BuyProduct";
 
 const ProductMain = () => {
   const [products, setProducts] = useState([]);
@@ -26,11 +27,7 @@ const ProductMain = () => {
       <ProductCard
         key={product.productId}
         product={product}
-        actionBtn={
-          <button className="bg-sky-300 text-white text-xl px-4 py-3 rounded-md">
-            購買
-          </button>
-        }
+        actionBtn={<BuyProduct product={product} />}
       />
     );
   });

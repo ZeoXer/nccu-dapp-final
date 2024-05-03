@@ -12,6 +12,11 @@ contract Store {
         bool onSell;
     }
 
+    struct BuyerProduct {
+        uint256 productId;
+        string productName;
+    }
+
     constructor() {
         owner = msg.sender;
     }
@@ -21,6 +26,9 @@ contract Store {
 
     // 紀錄商品列表
     mapping(uint256 => Product) public products;
+
+    // 紀錄買家購買的商品
+    mapping(address => BuyerProduct[]) public buyerProducts;
 
     // 紀錄商品編號
     uint256 public productIds = 0;
@@ -46,7 +54,7 @@ contract Store {
         address indexed seller,
         uint256 indexed productId,
         uint256 price,
-        uint256 stock
+        uint256 quantity
     );
 
     modifier onlyOwner() {
@@ -108,8 +116,13 @@ contract Store {
             msg.value >= products[productId].price * quantity,
             "Insufficient funds"
         );
+        // 計算賣方的帳戶餘額
         balances[seller] += products[productId].price * quantity;
         products[productId].stock -= quantity;
+        // 將商品添加到買家的紀錄中
+        buyerProducts[msg.sender].push(
+            BuyerProduct(productId, products[productId].productName)
+        );
         emit ProductBuy(
             msg.sender,
             seller,
@@ -124,6 +137,10 @@ contract Store {
         uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
         payable(msg.sender).transfer(amount);
+    }
+
+    function getBalance() public view returns (uint256) {
+        return balances[msg.sender];
     }
 
     function getAllProducts() public view returns (Product[] memory) {
@@ -152,5 +169,9 @@ contract Store {
         }
 
         return sellerProducts;
+    }
+
+    function getBuyerProducts() public view returns (BuyerProduct[] memory) {
+        return buyerProducts[msg.sender];
     }
 }
