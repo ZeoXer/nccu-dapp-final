@@ -15,8 +15,8 @@ const Header = () => {
       <div className="text-xl font-semibold text-white flex justify-between gap-4">
         <Link to={Routes.PRODUCT_MAIN}>商店首頁</Link>
         <Link to={Routes.PRODUCT_MANAGE}>管理商品</Link>
-        <Link to={Routes.PRODUCT_MANAGE}>已購買清單</Link>
-        <Link to={Routes.PRODUCT_MANAGE}>交易紀錄</Link>
+        <Link to={Routes.PRODUCT_BOUGHT}>已購買清單</Link>
+        <Link to={Routes.RECORD}>交易紀錄</Link>
       </div>
     </div>
   );

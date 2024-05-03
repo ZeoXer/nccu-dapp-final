@@ -37,10 +37,11 @@ const BuyProduct = ({ product }) => {
 
   const buyProduct = async (product, quantity) => {
     if (!contract) return;
-    const response = await contract.methods
+    await contract.methods
       .buyProduct(product.seller, product.productId, quantity)
-      .send({ from: accounts[0] });
-    console.log(response);
+      .send({ from: accounts[0], value: product.price * quantity });
+    closeModal();
+    window.location.reload();
   };
 
   const BuyProductButton = () => {

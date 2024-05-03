@@ -120,9 +120,11 @@ contract Store {
         balances[seller] += products[productId].price * quantity;
         products[productId].stock -= quantity;
         // 將商品添加到買家的紀錄中
-        buyerProducts[msg.sender].push(
-            BuyerProduct(productId, products[productId].productName)
-        );
+        for (uint256 i = 0; i < quantity; i++) {
+            buyerProducts[msg.sender].push(
+                BuyerProduct(productId, products[productId].productName)
+            );
+        }
         emit ProductBuy(
             msg.sender,
             seller,
