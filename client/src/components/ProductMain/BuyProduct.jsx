@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import {
   MinusCircleIcon,
@@ -6,11 +6,13 @@ import {
   XMarkIcon,
 } from "@heroicons/react/20/solid";
 import { config } from "../../config";
+import Web3 from "web3";
 
 const BuyProduct = ({ product }) => {
   const [isModalShow, setIsModalShow] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
+  const web3 = new Web3(window.ethereum);
   const {
     state: { contract, accounts },
   } = useEth();
@@ -20,6 +22,7 @@ const BuyProduct = ({ product }) => {
   };
 
   const closeModal = () => {
+    setQuantity(1);
     setIsModalShow(false);
   };
 
@@ -37,9 +40,17 @@ const BuyProduct = ({ product }) => {
 
   const buyProduct = async (product, quantity) => {
     if (!contract) return;
+
+    const productPrice = product.price / config.PRICE_BASE;
+
+    const priceInWei = web3.utils.toWei(
+      (productPrice * quantity).toString(),
+      "ether"
+    );
+
     await contract.methods
       .buyProduct(product.seller, product.productId, quantity)
-      .send({ from: accounts[0], value: product.price * quantity });
+      .send({ from: accounts[0], value: priceInWei });
     closeModal();
     window.location.reload();
   };
@@ -54,10 +65,6 @@ const BuyProduct = ({ product }) => {
       </button>
     );
   };
-
-  useEffect(() => {
-    setQuantity(1);
-  }, []);
 
   return (
     <>

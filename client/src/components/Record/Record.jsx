@@ -17,6 +17,12 @@ const Record = () => {
     setBalance(response);
   }, [accounts, contract]);
 
+  const withdrawBalance = async () => {
+    if (!contract) return;
+    await contract.methods.withdrawBalance().send({ from: accounts[0] });
+    getBalance();
+  };
+
   useEffect(() => {
     getBalance();
   }, [getBalance]);
@@ -28,7 +34,10 @@ const Record = () => {
         <p className="text-4xl font-bold italic mb-4">
           {balance / config.PRICE_BASE}
         </p>
-        <button className="bg-sky-300 text-white text-xl px-5 py-3 rounded-md">
+        <button
+          className="bg-sky-300 text-white text-xl px-5 py-3 rounded-md"
+          onClick={withdrawBalance}
+        >
           提領
         </button>
       </div>
