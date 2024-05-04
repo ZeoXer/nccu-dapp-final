@@ -119,9 +119,10 @@ const Record = () => {
           className="border-b py-3 px-4 flex justify-between items-center"
         >
           <div>
-            <h3 className="text-3xl font-semibold">
-              {record.name} <XMarkIcon className="w-6 inline" />{" "}
-              {record.quantity}
+            <h3 className="text-3xl font-semibold flex items-center">
+              <span>{record.name}</span>{" "}
+              <XMarkIcon className="w-6 inline mx-1" />{" "}
+              <span>{record.quantity}</span>
             </h3>
             <p className="text-xl text-gray-400">從 {record.from}</p>
           </div>
@@ -155,8 +156,9 @@ const Record = () => {
         className="border-b py-3 px-4 flex justify-between items-center"
       >
         <div>
-          <h3 className="text-3xl font-semibold">
-            {record.name} <XMarkIcon className="w-5 inline" /> {record.quantity}
+          <h3 className="text-3xl font-semibold flex items-center">
+            <span>{record.name}</span> <XMarkIcon className="w-6 inline mx-1" />{" "}
+            <span>{record.quantity}</span>
           </h3>
           <p className="text-xl text-gray-400">給 {record.to}</p>
         </div>
@@ -171,9 +173,7 @@ const Record = () => {
     <div className="px-3 py-4">
       <div className="flex flex-col items-center mb-8">
         <h2 className="text-3xl mb-4 font-semibold">販賣總額</h2>
-        <p className="text-4xl font-bold mb-4">
-          {balance / config.PRICE_BASE}
-        </p>
+        <p className="text-4xl font-bold mb-4">{balance / config.PRICE_BASE}</p>
         <button
           className="bg-sky-300 text-white text-xl px-5 py-3 rounded-md disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={withdrawBalance}
