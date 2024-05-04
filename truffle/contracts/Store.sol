@@ -54,8 +54,10 @@ contract Store {
         address indexed seller,
         uint256 indexed productId,
         uint256 price,
+        string productName,
         uint256 quantity
     );
+    event WithdrawBalance(address indexed buyer, uint256 value);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
@@ -130,15 +132,16 @@ contract Store {
             seller,
             productId,
             products[productId].price,
+            products[productId].productName,
             quantity
         );
     }
 
-    function withdrawBalance() public {
+    function withdrawBalance(uint256 value) public {
         require(balances[msg.sender] > 0, "Insufficient funds");
-        uint256 amount = balances[msg.sender];
         balances[msg.sender] = 0;
-        payable(msg.sender).transfer(amount);
+        payable(msg.sender).transfer(value);
+        emit WithdrawBalance(msg.sender, value);
     }
 
     function getBalance() public view returns (uint256) {

@@ -26,12 +26,12 @@ const ProductCard = ({ product, actionBtn }) => {
           <h3 className="text-3xl font-semibold">{product.productName}</h3>
           <p className="text-xl">
             價格{" "}
-            <span className="text-2xl italic">
+            <span className="text-2xl">
               {product.price / config.PRICE_BASE}
             </span>
           </p>
           <p className="text-xl">
-            庫存 <span className="text-2xl italic">{product.stock}</span>
+            庫存 <span className="text-2xl">{product.stock}</span>
           </p>
         </div>
         {actionBtn}

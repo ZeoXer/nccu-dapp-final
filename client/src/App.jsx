@@ -1,6 +1,6 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { EthProvider } from "./contexts/EthContext";
-import Header from "./components/Header/Header";
+import Header from "./components/header/Header";
 import ProductMain from "./components/ProductMain/ProductMain";
 import ProductManage from "./components/ProductManage/ProductManage";
 import ProductBought from "./components/ProductBought/ProductBought";

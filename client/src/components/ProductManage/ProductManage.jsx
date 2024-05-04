@@ -51,8 +51,8 @@ const ProductManage = () => {
 
   return (
     <div className="px-3 py-4">
-      <div className="flex justify-between items-start">
-        <h2 className="text-3xl">商品管理</h2>
+      <div className="flex justify-between items-start border-b pb-2 border-black mb-8">
+        <h2 className="text-4xl font-bold">商品管理</h2>
         <AddProduct />
       </div>
 

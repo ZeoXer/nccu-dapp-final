@@ -31,7 +31,9 @@ const ProductBought = () => {
 
   return (
     <div className="px-3 py-4">
-      <h2 className="text-3xl mb-8">已購買的商品</h2>
+      <h2 className="text-4xl mb-8 font-bold border-b pb-2 border-black">
+        已購買的商品
+      </h2>
       {productList[0] === null || productList?.length === 0 ? (
         <div className="py-8 text-center text-2xl">尚無購買的商品</div>
       ) : (

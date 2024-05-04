@@ -34,7 +34,7 @@ const ProductMain = () => {
 
   return (
     <div className="px-3 py-4">
-      <h2 className="text-3xl mb-8">所有商品列表</h2>
+      <h2 className="text-4xl mb-8 font-bold border-b pb-2 border-black">所有商品列表</h2>
       {productList[0] === null || productList?.length === 0 ? (
         <div className="py-8 text-center text-2xl">尚無商品</div>
       ) : (
