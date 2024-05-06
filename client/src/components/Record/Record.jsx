@@ -60,7 +60,7 @@ const Record = () => {
               name: eventTarget.productName,
               price: eventTarget.price / config.PRICE_BASE,
               quantity: +eventTarget.quantity,
-              to: eventTarget.seller,
+              to: eventTarget.buyer,
             });
           }
         });
