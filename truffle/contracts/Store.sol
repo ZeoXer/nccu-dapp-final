@@ -111,7 +111,7 @@ contract Store {
         uint256 quantity
     ) public payable {
         require(
-            products[productId].stock > quantity,
+            products[productId].stock >= quantity,
             "Insufficient quantity of product"
         );
         require(
