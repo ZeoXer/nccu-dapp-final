@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { config } from "../../config";
+import { createPortal } from "react-dom";
 
 const EditProductInput = ({ label, type, value, onChange, min, step }) => {
   return (
@@ -26,7 +27,7 @@ const EditProduct = ({ product }) => {
     product.price / config.PRICE_BASE
   );
   const [productStock, setProductStock] = useState(product.stock);
-  
+
   const {
     state: { contract, accounts },
   } = useEth();
@@ -69,56 +70,58 @@ const EditProduct = ({ product }) => {
   return (
     <>
       <EditProductButton />
-      {isModalShow && (
-        <div className="fixed inset-0 z-[1000] bg-gray-500 bg-opacity-50">
-          <div className="fixed inset-0 flex items-center justify-center backdrop-blur">
-            <div className="w-[500px] bg-white rounded-md relative">
-              <div className="bg-sky-300 px-3 py-4 rounded-t-md text-white flex items-center justify-between">
-                <h4 className="text-2xl font-semibold">編輯商品</h4>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    closeModal();
-                  }}
-                >
-                  <XMarkIcon className="w-8" />
-                </button>
-              </div>
-              <div className="px-3 py-4">
-                <EditProductInput
-                  label="商品名稱"
-                  type="text"
-                  value={productName}
-                  onChange={(e) => {
-                    setProductName(e.target.value);
-                  }}
-                />
-                <EditProductInput
-                  label="商品價格"
-                  type="number"
-                  value={productPrice}
-                  onChange={(e) => setProductPrice(e.target.value)}
-                  min={0}
-                  step={0.01}
-                />
-                <EditProductInput
-                  label="商品庫存"
-                  type="number"
-                  value={productStock}
-                  onChange={(e) => setProductStock(e.target.value)}
-                  min={0}
-                />
-                <button
-                  onClick={editProduct}
-                  className="bg-sky-300 px-4 py-2 text-white rounded-md text-xl"
-                >
-                  確認修改
-                </button>
+      {isModalShow &&
+        createPortal(
+          <div className="fixed inset-0 z-[1000] bg-gray-500 bg-opacity-50">
+            <div className="fixed inset-0 flex items-center justify-center backdrop-blur">
+              <div className="w-[500px] bg-white rounded-md">
+                <div className="bg-sky-300 px-3 py-4 rounded-t-md text-white flex items-center justify-between">
+                  <h4 className="text-2xl font-semibold">編輯商品</h4>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      closeModal();
+                    }}
+                  >
+                    <XMarkIcon className="w-8" />
+                  </button>
+                </div>
+                <div className="px-3 py-4">
+                  <EditProductInput
+                    label="商品名稱"
+                    type="text"
+                    value={productName}
+                    onChange={(e) => {
+                      setProductName(e.target.value);
+                    }}
+                  />
+                  <EditProductInput
+                    label="商品價格"
+                    type="number"
+                    value={productPrice}
+                    onChange={(e) => setProductPrice(e.target.value)}
+                    min={0}
+                    step={0.01}
+                  />
+                  <EditProductInput
+                    label="商品庫存"
+                    type="number"
+                    value={productStock}
+                    onChange={(e) => setProductStock(e.target.value)}
+                    min={0}
+                  />
+                  <button
+                    onClick={editProduct}
+                    className="bg-sky-300 px-4 py-2 text-white rounded-md text-xl"
+                  >
+                    確認修改
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   );
 };

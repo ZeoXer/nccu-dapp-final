@@ -6,12 +6,21 @@ const ProductCard = ({ product, actionBtn }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const getRandomImgUrl = () => {
-    const randomId = Math.floor(Math.random() * 100);
-    return `https://picsum.photos/id/${randomId}/500/300`;
+    return `https://picsum.photos/id/${product.productId}/500/300`;
   };
 
   return (
-    <div className="border border-gray-300 rounded-md">
+    <div className="border border-gray-300 rounded-md relative">
+      <div
+        className={clsx(
+          "absolute inset-0 bg-gray-700 rounded-md bg-opacity-50 z-10 flex items-center justify-center",
+          product.stock === "0" ? "block" : "hidden"
+        )}
+      >
+        <span className="text-3xl text-white font-semibold size-32 rounded-full flex items-center justify-center bg-blue-300">
+          已售完
+        </span>
+      </div>
       {!isLoaded && (
         <div className="animate-pulse bg-gray-300 h-44 rounded-t-md"></div>
       )}
