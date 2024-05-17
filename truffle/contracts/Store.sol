@@ -13,6 +13,7 @@ contract Store {
     }
 
     struct BuyerProduct {
+        address seller;
         uint256 productId;
         string productName;
     }
@@ -124,7 +125,7 @@ contract Store {
         // 將商品添加到買家的紀錄中
         for (uint256 i = 0; i < quantity; i++) {
             buyerProducts[msg.sender].push(
-                BuyerProduct(productId, products[productId].productName)
+                BuyerProduct(seller, productId, products[productId].productName)
             );
         }
         emit ProductBuy(
