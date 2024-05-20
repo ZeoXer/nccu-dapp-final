@@ -38,7 +38,7 @@ const ProductMain = () => {
       {productList[0] === null || productList?.length === 0 ? (
         <div className="py-8 text-center text-2xl">尚無商品</div>
       ) : (
-        <div className="grid grid-cols-4 gap-2">{productList}</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">{productList}</div>
       )}
     </div>
   );
