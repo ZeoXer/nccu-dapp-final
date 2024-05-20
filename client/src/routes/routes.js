@@ -3,4 +3,5 @@ export const Routes = {
   PRODUCT_MANAGE: "/products",
   PRODUCT_BOUGHT: "/bought",
   RECORD: "/record",
+  SCAN: "/scan",
 };

@@ -5,6 +5,7 @@ import ProductMain from "./components/ProductMain/ProductMain";
 import ProductManage from "./components/ProductManage/ProductManage";
 import ProductBought from "./components/ProductBought/ProductBought";
 import Record from "./components/Record/Record";
+import Scanner from "./components/Scanner/Scanner";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/products" element={<ProductManage />} />
             <Route path="/bought" element={<ProductBought />} />
             <Route path="/record" element={<Record />} />
+            <Route path="/scan" element={<Scanner />} />
             <Route path="/" element={<ProductMain />} />
           </Routes>
         </div>

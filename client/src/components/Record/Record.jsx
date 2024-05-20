@@ -124,7 +124,9 @@ const Record = () => {
               <XMarkIcon className="w-6 inline mx-1" />{" "}
               <span>{record.quantity}</span>
             </h3>
-            <p className="text-xl text-gray-400">從 {record.from}</p>
+            <p className="text-xl text-gray-400 truncate w-40 md:w-full">
+              從 {record.from}
+            </p>
           </div>
           <p className="text-3xl font-semibold">
             - {record.price * record.quantity}
@@ -139,7 +141,9 @@ const Record = () => {
         >
           <div>
             <h3 className="text-3xl font-semibold">提領</h3>
-            <p className="text-xl text-gray-400">給 {accounts[0]}</p>
+            <p className="text-xl text-gray-400 truncate w-40 md:w-full">
+              給 {accounts[0]}
+            </p>
           </div>
           <p className="text-3xl font-semibold">- {record.value / 10 ** 18}</p>
         </div>
@@ -160,7 +164,9 @@ const Record = () => {
             <span>{record.name}</span> <XMarkIcon className="w-6 inline mx-1" />{" "}
             <span>{record.quantity}</span>
           </h3>
-          <p className="text-xl text-gray-400">給 {record.to}</p>
+          <p className="text-xl text-gray-400 truncate w-40 md:w-full">
+            給 {record.to}
+          </p>
         </div>
         <p className="text-3xl font-semibold">
           + {record.price * record.quantity}

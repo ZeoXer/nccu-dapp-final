@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { config } from "../../config";
-// import QrScanner from "qr-scanner";
 import clsx from "clsx";
 
 const AddProductInput = ({ label, type, value, onChange, min, step }) => {
@@ -26,7 +25,6 @@ const AddProduct = () => {
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState(0);
   const [productStock, setProductStock] = useState(0);
-  // const [qrScanner, setQrScanner] = useState(null);
 
   const {
     state: { contract, accounts },
@@ -34,7 +32,6 @@ const AddProduct = () => {
 
   const openModal = () => {
     setIsModalShow(true);
-    // qrScanner.start();
   };
 
   const closeModal = () => {
@@ -63,16 +60,6 @@ const AddProduct = () => {
       </button>
     );
   };
-
-  // useEffect(() => {
-  //   const qrScannerElm = document.getElementById("qr-scanner");
-  //   const qrScanner = new QrScanner(
-  //     qrScannerElm,
-  //     (result) => console.log(result),
-  //     {}
-  //   );
-  //   setQrScanner(qrScanner);
-  // }, []);
 
   return (
     <>
@@ -123,9 +110,6 @@ const AddProduct = () => {
                     min={0}
                   />
                 </div>
-                {/* <div className="flex items-center">
-                  <video id="qr-scanner" className="size-40"></video>
-                </div> */}
               </div>
               <button
                 onClick={addProduct}
