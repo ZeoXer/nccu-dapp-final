@@ -27,18 +27,26 @@ const ProductMain = () => {
       <ProductCard
         key={product.productId}
         product={product}
-        actionBtn={<BuyProduct product={product} />}
+        actionBtn={
+          <div className="flex justify-end">
+            <BuyProduct product={product} />
+          </div>
+        }
       />
     );
   });
 
   return (
     <div className="px-3 py-4">
-      <h2 className="text-4xl mb-8 font-bold border-b pb-2 border-black">所有商品列表</h2>
+      <h2 className="text-4xl mb-8 font-bold border-b pb-2 border-black">
+        所有商品列表
+      </h2>
       {productList[0] === null || productList?.length === 0 ? (
         <div className="py-8 text-center text-2xl">尚無商品</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">{productList}</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          {productList}
+        </div>
       )}
     </div>
   );

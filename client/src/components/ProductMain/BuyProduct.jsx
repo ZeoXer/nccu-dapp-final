@@ -49,7 +49,7 @@ const BuyProduct = ({ product }) => {
     );
 
     await contract.methods
-      .buyProduct(product.seller, product.productId, quantity)
+      .buyProduct(product.productId, quantity)
       .send({ from: accounts[0], value: priceInWei });
     closeModal();
     window.location.reload();

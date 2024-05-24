@@ -1,12 +1,24 @@
 import { useState } from "react";
 import clsx from "clsx";
 import { config } from "../../config";
+import {
+  BanknotesIcon,
+  ClockIcon,
+  TicketIcon,
+} from "@heroicons/react/24/outline";
 
 const ProductCard = ({ product, actionBtn }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const getRandomImgUrl = () => {
     return `https://picsum.photos/id/${product.productId}/500/300`;
+  };
+
+  const getDateString = (date) => {
+    const dateArr = new Date(+date).toLocaleDateString().split("/");
+    dateArr[1] = dateArr[1].padStart(2, "0");
+    dateArr[2] = dateArr[2].padStart(2, "0");
+    return dateArr.join("/");
   };
 
   return (
@@ -21,6 +33,12 @@ const ProductCard = ({ product, actionBtn }) => {
           已售完
         </span>
       </div>
+      <p className="text-xl absolute top-2 left-2 flex items-center bg-white w-8 overflow-hidden p-1 transition-all rounded-md hover:w-[90%]">
+        <ClockIcon className="w-6 me-1 flex-shrink-0" />
+        <span className="text-lg flex-shrink-0">
+          {getDateString(product.startTime)} - {getDateString(product.endTime)}
+        </span>
+      </p>
       {!isLoaded && (
         <div className="animate-pulse bg-gray-300 h-44 rounded-t-md"></div>
       )}
@@ -30,17 +48,23 @@ const ProductCard = ({ product, actionBtn }) => {
         alt="random img"
         className={clsx("rounded-t-md", isLoaded ? "block" : "invisible")}
       />
-      <div className="p-2 flex items-end justify-between">
+      <div className="p-2">
         <div>
-          <h3 className="text-3xl font-semibold">{product.productName}</h3>
-          <p className="text-xl">
-            價格{" "}
+          <h3 className="text-3xl mb-2 font-semibold">{product.productName}</h3>
+          <textarea
+            readOnly
+            value={product.productDescription}
+            className="text-xl mb-1 focus:outline-none h-16 hover:h-32 border-y-2 py-2 rounded-md transition-all p-1 w-full resize-none"
+          />
+          <p className="text-xl flex items-center">
+            <BanknotesIcon className="w-6 me-1" />
             <span className="text-2xl">
               {product.price / config.PRICE_BASE}
             </span>
           </p>
-          <p className="text-xl">
-            庫存 <span className="text-2xl">{product.stock}</span>
+          <p className="text-xl flex items-center">
+            <TicketIcon className="w-6 me-1" />
+            <span className="text-2xl">{product.stock}</span>
           </p>
         </div>
         {actionBtn}

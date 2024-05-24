@@ -35,7 +35,7 @@ const ProductManage = () => {
         key={product.productId}
         product={product}
         actionBtn={
-          <div className="z-10">
+          <div className="relative z-10 flex justify-end">
             <EditProduct product={product} />
             <button
               className="bg-orange-300 text-white text-xl px-4 py-3 rounded-md"
@@ -58,7 +58,9 @@ const ProductManage = () => {
       {productList[0] === null || productList.length === 0 ? (
         <div className="py-8 text-center text-2xl">尚未新增商品</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">{productList}</div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          {productList}
+        </div>
       )}
     </div>
   );

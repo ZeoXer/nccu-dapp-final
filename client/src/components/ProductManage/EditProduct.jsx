@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { config } from "../../config";
 import { createPortal } from "react-dom";
 
 const EditProductInput = ({ label, type, value, onChange, min, step }) => {
@@ -12,9 +11,22 @@ const EditProductInput = ({ label, type, value, onChange, min, step }) => {
         type={type}
         value={value}
         onChange={onChange}
-        className="border rounded-md text-lg px-2 py-1"
+        className="border rounded-md text-lg px-2 py-1 w-80"
         min={min}
         step={step}
+      />
+    </div>
+  );
+};
+
+const EditProductTextarea = ({ label, value, onChange }) => {
+  return (
+    <div className="mb-4 flex items-start">
+      <label className="text-xl me-2">{label}</label>
+      <textarea
+        value={value}
+        onChange={onChange}
+        className="border rounded-md text-lg px-2 py-1 resize-none h-32 w-80"
       />
     </div>
   );
@@ -23,8 +35,8 @@ const EditProductInput = ({ label, type, value, onChange, min, step }) => {
 const EditProduct = ({ product }) => {
   const [isModalShow, setIsModalShow] = useState(false);
   const [productName, setProductName] = useState(product.productName);
-  const [productPrice, setProductPrice] = useState(
-    product.price / config.PRICE_BASE
+  const [productDescription, setProductDescription] = useState(
+    product.productDescription
   );
   const [productStock, setProductStock] = useState(product.stock);
 
@@ -41,13 +53,11 @@ const EditProduct = ({ product }) => {
   };
 
   const editProduct = async () => {
-    const productPriceToStored = productPrice * config.PRICE_BASE;
-
     await contract.methods
       .updateProduct(
         product.productId,
         productName,
-        productPriceToStored,
+        productDescription,
         productStock
       )
       .send({ from: accounts[0] });
@@ -76,7 +86,7 @@ const EditProduct = ({ product }) => {
             <div className="fixed inset-0 flex items-center justify-center backdrop-blur">
               <div className="w-[500px] bg-white rounded-md">
                 <div className="bg-sky-300 px-3 py-4 rounded-t-md text-white flex items-center justify-between">
-                  <h4 className="text-2xl font-semibold">編輯商品</h4>
+                  <h4 className="text-2xl font-semibold">編輯票券</h4>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
@@ -88,23 +98,22 @@ const EditProduct = ({ product }) => {
                 </div>
                 <div className="px-3 py-4">
                   <EditProductInput
-                    label="商品名稱"
+                    label="活動名稱"
                     type="text"
                     value={productName}
                     onChange={(e) => {
                       setProductName(e.target.value);
                     }}
                   />
-                  <EditProductInput
-                    label="商品價格"
-                    type="number"
-                    value={productPrice}
-                    onChange={(e) => setProductPrice(e.target.value)}
-                    min={0}
-                    step={0.01}
+                  <EditProductTextarea
+                    label="活動敘述"
+                    value={productDescription}
+                    onChange={(e) => {
+                      setProductDescription(e.target.value);
+                    }}
                   />
                   <EditProductInput
-                    label="商品庫存"
+                    label="票券庫存"
                     type="number"
                     value={productStock}
                     onChange={(e) => setProductStock(e.target.value)}

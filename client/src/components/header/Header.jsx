@@ -1,5 +1,6 @@
 import { Bars3Icon, TicketIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { useEth } from "../../contexts/EthContext";
 import { Link } from "react-router-dom";
 import { Routes } from "../../routes/routes";
 import clsx from "clsx";
@@ -7,15 +8,25 @@ import clsx from "clsx";
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const {
+    state: { accounts },
+  } = useEth();
+
   return (
     <div className="relative">
       <div className="w-full bg-sky-300 flex justify-between items-center px-3 py-4">
-        <Link to={Routes.PRODUCT_MAIN}>
-          <h1 className="text-3xl flex items-center font-black text-white">
-            <TicketIcon className="w-12 me-2" />
-            <p>券合</p>
-          </h1>
-        </Link>
+        <div className="flex items-center">
+          <Link to={Routes.PRODUCT_MAIN}>
+            <h1 className="text-3xl flex items-center font-black text-white">
+              <TicketIcon className="w-12 me-2" />
+              <p>券合</p>
+            </h1>
+          </Link>
+          <div className="ms-4 w-36 font-bold bg-sky-300 text-lg text-white border-2 border-white px-2 py-1 rounded-md truncate">
+            {accounts && accounts[0]}
+          </div>
+        </div>
+
         <div className="text-xl font-semibold text-white justify-between gap-4 hidden md:flex">
           <Link to={Routes.PRODUCT_MAIN}>商店首頁</Link>
           <Link to={Routes.PRODUCT_MANAGE}>管理商品</Link>
