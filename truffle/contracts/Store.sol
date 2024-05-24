@@ -4,18 +4,28 @@ pragma solidity >=0.4.22 <0.9.0;
 contract Store {
     address public owner;
     struct Product {
-        address seller;
         uint256 productId;
         string productName;
+        string productDescription;
+        uint256 startTime;
+        uint256 endTime;
+        address releaser;
+        address seller;
+        uint releasePrice;
         uint256 price;
         uint256 stock;
         bool onSell;
     }
 
     struct BuyerProduct {
+        address releaser;
         address seller;
         uint256 productId;
         string productName;
+        string productDescription;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 releasePrice;
     }
 
     constructor() {
@@ -36,17 +46,16 @@ contract Store {
 
     // 紀錄監聽重要事件
     event ProductAdd(
-        address indexed seller,
+        address indexed releaser,
         uint256 indexed productId,
         string indexed productName,
-        uint256 price,
+        uint256 releasePrice,
         uint256 stock
     );
     event ProductUpdate(
         address indexed seller,
         uint256 indexed productId,
         string indexed productName,
-        uint256 price,
         uint256 stock
     );
     event ProductToggleSold(address indexed seller, uint256 indexed productId);
@@ -72,14 +81,22 @@ contract Store {
 
     function addProduct(
         string memory productName,
+        string memory productDescription,
+        uint startTime,
+        uint endTime,
         uint256 price,
         uint256 stock
     ) public {
         productIds++;
         products[productIds] = Product(
-            msg.sender,
             productIds,
             productName,
+            productDescription,
+            startTime,
+            endTime,
+            msg.sender,
+            msg.sender,
+            price,
             price,
             stock,
             true
@@ -90,13 +107,17 @@ contract Store {
     function updateProduct(
         uint256 productId,
         string memory productName,
-        uint256 price,
+        string memory productDescription,
         uint256 stock
     ) public checkIsSeller(products[productId].seller, msg.sender) {
+        require(
+            block.timestamp < products[productId].startTime,
+            "Not allow to update product after start time"
+        );
         products[productId].productName = productName;
+        products[productId].productDescription = productDescription;
         products[productId].stock = stock;
-        products[productId].price = price;
-        emit ProductUpdate(msg.sender, productId, productName, price, stock);
+        emit ProductUpdate(msg.sender, productId, productName, stock);
     }
 
     function toggleSoldProduct(
@@ -106,11 +127,7 @@ contract Store {
         emit ProductToggleSold(msg.sender, productId);
     }
 
-    function buyProduct(
-        address seller,
-        uint256 productId,
-        uint256 quantity
-    ) public payable {
+    function buyProduct(uint256 productId, uint256 quantity) public payable {
         require(
             products[productId].stock >= quantity,
             "Insufficient quantity of product"
@@ -119,13 +136,23 @@ contract Store {
             msg.value >= products[productId].price * quantity,
             "Insufficient funds"
         );
+        address seller = products[productId].seller;
         // 計算賣方的帳戶餘額
         balances[seller] += products[productId].price * quantity;
         products[productId].stock -= quantity;
         // 將商品添加到買家的紀錄中
         for (uint256 i = 0; i < quantity; i++) {
             buyerProducts[msg.sender].push(
-                BuyerProduct(seller, productId, products[productId].productName)
+                BuyerProduct(
+                    products[productId].releaser,
+                    seller,
+                    productId,
+                    products[productId].productName,
+                    products[productId].productDescription,
+                    products[productId].startTime,
+                    products[productId].endTime,
+                    products[productId].releasePrice
+                )
             );
         }
         emit ProductBuy(
