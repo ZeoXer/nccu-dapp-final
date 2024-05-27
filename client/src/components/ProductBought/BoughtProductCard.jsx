@@ -31,7 +31,7 @@ const BoughtProductCard = ({ product }) => {
   const generateQRCode = useCallback(
     (product) => {
       toDataURL(
-        `${product.productName}-${accounts[0]}-${product.seller}`,
+        `${product.productName}-${accounts[0]}-${product.releaser}-${product.endTime}`,
         qrcodeOptions,
         (err, url) => {
           if (err) throw err;
@@ -48,6 +48,11 @@ const BoughtProductCard = ({ product }) => {
 
   const closeModal = () => {
     setQrCodeModal(false);
+  };
+
+  const isOutOfDate = () => {
+    const now = new Date().getTime();
+    return now > new Date(+product.endTime).getTime();
   };
 
   const OpenQrCodeBtn = () => {
@@ -68,6 +73,16 @@ const BoughtProductCard = ({ product }) => {
   return (
     <>
       <div className="border border-gray-300 rounded-md relative">
+        <div
+          className={clsx(
+            "absolute inset-0 bg-gray-700 rounded-md bg-opacity-50 z-10 flex items-center justify-center",
+            isOutOfDate() ? "block" : "hidden"
+          )}
+        >
+          <span className="text-3xl text-white font-semibold size-32 rounded-full flex items-center justify-center bg-blue-300">
+            已過期
+          </span>
+        </div>
         {!isLoaded && (
           <div className="animate-pulse bg-gray-300 h-[250px] rounded-t-md"></div>
         )}

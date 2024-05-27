@@ -21,6 +21,11 @@ const ProductCard = ({ product, actionBtn }) => {
     return dateArr.join("/");
   };
 
+  const isOutOfDate = () => {
+    const now = new Date().getTime();
+    return now > new Date(+product.endTime).getTime();
+  };
+
   return (
     <div className="border border-gray-300 rounded-md relative">
       <div
@@ -31,6 +36,16 @@ const ProductCard = ({ product, actionBtn }) => {
       >
         <span className="text-3xl text-white font-semibold size-32 rounded-full flex items-center justify-center bg-blue-300">
           已售完
+        </span>
+      </div>
+      <div
+        className={clsx(
+          "absolute inset-0 bg-gray-700 rounded-md bg-opacity-50 z-10 flex items-center justify-center",
+          isOutOfDate() ? "block" : "hidden"
+        )}
+      >
+        <span className="text-3xl text-white font-semibold size-32 rounded-full flex items-center justify-center bg-blue-300">
+          已過期
         </span>
       </div>
       <p className="text-xl absolute top-2 left-2 flex items-center bg-white w-8 overflow-hidden p-1 transition-all rounded-md hover:w-[90%]">
