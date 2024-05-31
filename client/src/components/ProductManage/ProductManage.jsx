@@ -24,6 +24,12 @@ const ProductManage = () => {
     window.location.reload();
   };
 
+  const removeResellProduct = async (id) => {
+    if (!contract) return;
+
+    await contract.methods.removeResellProduct(id).send({ from: accounts[0] });
+  };
+
   useEffect(() => {
     getSellerProducts();
   }, [getSellerProducts]);
@@ -36,13 +42,24 @@ const ProductManage = () => {
         product={product}
         actionBtn={
           <div className="relative z-10 flex justify-end">
-            <EditProduct product={product} />
-            <button
-              className="bg-orange-300 text-white text-xl px-4 py-3 rounded-md"
-              onClick={() => toggleSoldProduct(product.productId)}
-            >
-              {product.onSell ? "下架" : "上架"}
-            </button>
+            {product.releaser === product.seller ? (
+              <>
+                <EditProduct product={product} />
+                <button
+                  className="bg-orange-300 text-white text-xl px-4 py-3 rounded-md"
+                  onClick={() => toggleSoldProduct(product.productId)}
+                >
+                  {product.onSell ? "下架" : "上架"}
+                </button>
+              </>
+            ) : (
+              <button
+                className="bg-orange-300 text-white text-xl px-4 py-3 rounded-md"
+                onClick={() => removeResellProduct(product.productId)}
+              >
+                領回
+              </button>
+            )}
           </div>
         }
       />

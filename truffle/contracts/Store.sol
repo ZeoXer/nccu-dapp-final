@@ -26,6 +26,7 @@ contract Store {
         uint256 startTime;
         uint256 endTime;
         uint256 releasePrice;
+        bool isUsed;
     }
 
     constructor() {
@@ -127,6 +128,76 @@ contract Store {
         emit ProductToggleSold(msg.sender, productId);
     }
 
+    function removeBuyerProduct(uint256 productId) public {
+        uint256 index = 0;
+        for (uint256 i = 0; i < buyerProducts[msg.sender].length; i++) {
+            if (buyerProducts[msg.sender][i].productId == productId) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != buyerProducts[msg.sender].length - 1) {
+            buyerProducts[msg.sender][index] = buyerProducts[msg.sender][
+                buyerProducts[msg.sender].length - 1
+            ];
+        }
+
+        buyerProducts[msg.sender].pop();
+    }
+
+    function resellProduct(
+        uint256 productId,
+        address releaser,
+        string memory productName,
+        string memory productDescription,
+        uint startTime,
+        uint endTime,
+        uint256 releasePrice,
+        uint256 price
+    ) public {
+        require(
+            block.timestamp < endTime,
+            "Not allow to resell product after end time"
+        );
+        productIds++;
+        products[productIds] = Product(
+            productIds,
+            productName,
+            productDescription,
+            startTime,
+            endTime,
+            releaser,
+            msg.sender,
+            releasePrice,
+            price,
+            1,
+            true
+        );
+        removeBuyerProduct(productId);
+        emit ProductAdd(msg.sender, productIds, productName, price, 1);
+    }
+
+    function removeResellProduct(
+        uint256 productId
+    ) public checkIsSeller(products[productId].seller, msg.sender) {
+        products[productId].onSell = false;
+        products[productId].seller = 0x0000000000000000000000000000000000000000;
+        buyerProducts[msg.sender].push(
+            BuyerProduct(
+                products[productId].releaser,
+                msg.sender,
+                productId,
+                products[productId].productName,
+                products[productId].productDescription,
+                products[productId].startTime,
+                products[productId].endTime,
+                products[productId].releasePrice,
+                false
+            )
+        );
+    }
+
     function buyProduct(uint256 productId, uint256 quantity) public payable {
         require(
             products[productId].stock >= quantity,
@@ -151,7 +222,8 @@ contract Store {
                     products[productId].productDescription,
                     products[productId].startTime,
                     products[productId].endTime,
-                    products[productId].releasePrice
+                    products[productId].releasePrice,
+                    false
                 )
             );
         }
@@ -164,6 +236,10 @@ contract Store {
             quantity
         );
     }
+
+    // function verifyTicket(){
+    //     // 這裡要實作驗證票券的邏輯
+    // }
 
     function withdrawBalance(uint256 value) public {
         require(balances[msg.sender] > 0, "Insufficient funds");

@@ -9,9 +9,12 @@ import {
 
 const ProductCard = ({ product, actionBtn }) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  console.log(product);
 
   const getRandomImgUrl = () => {
-    return `https://picsum.photos/id/${product.productId}/500/300`;
+    return `https://picsum.photos/id/${
+      product.productId * Math.round(Math.random() * 10)
+    }/500/300`;
   };
 
   const getDateString = (date) => {
@@ -65,11 +68,18 @@ const ProductCard = ({ product, actionBtn }) => {
       />
       <div className="p-2">
         <div>
-          <h3 className="text-3xl mb-2 font-semibold">{product.productName}</h3>
+          <h3 className="text-3xl mb-2 font-semibold flex items-center gap-2">
+            {product.productName}
+            {product.releaser !== product.seller && (
+              <span className="text-lg px-2 py-1 text-white bg-orange-300 rounded-md">
+                轉售
+              </span>
+            )}
+          </h3>
           <textarea
             readOnly
             value={product.productDescription}
-            className="text-xl mb-1 focus:outline-none h-16 hover:h-32 border-y-2 py-2 rounded-md transition-all p-1 w-full resize-none"
+            className="text-xl mb-1 focus:outline-none border-y-2 py-2 p-1 w-full resize-none"
           />
           <p className="text-xl flex items-center">
             <BanknotesIcon className="w-6 me-1" />
