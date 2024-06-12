@@ -18,6 +18,7 @@ contract Store {
     }
 
     struct BuyerProduct {
+        uint256 id;
         address releaser;
         address seller;
         uint256 productId;
@@ -69,6 +70,7 @@ contract Store {
         uint256 quantity
     );
     event WithdrawBalance(address indexed buyer, uint256 value);
+    event TicketChecked(string message);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
@@ -160,6 +162,7 @@ contract Store {
             block.timestamp < endTime,
             "Not allow to resell product after end time"
         );
+        require(price < releasePrice, "Price must be less than release price");
         productIds++;
         products[productIds] = Product(
             productIds,
@@ -178,6 +181,11 @@ contract Store {
         emit ProductAdd(msg.sender, productIds, productName, price, 1);
     }
 
+    function generateId() private view returns (uint256) {
+        return
+            uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
+    }
+
     function removeResellProduct(
         uint256 productId
     ) public checkIsSeller(products[productId].seller, msg.sender) {
@@ -185,6 +193,7 @@ contract Store {
         products[productId].seller = 0x0000000000000000000000000000000000000000;
         buyerProducts[msg.sender].push(
             BuyerProduct(
+                generateId(),
                 products[productId].releaser,
                 msg.sender,
                 productId,
@@ -215,6 +224,7 @@ contract Store {
         for (uint256 i = 0; i < quantity; i++) {
             buyerProducts[msg.sender].push(
                 BuyerProduct(
+                    generateId(),
                     products[productId].releaser,
                     seller,
                     productId,
@@ -237,9 +247,34 @@ contract Store {
         );
     }
 
-    // function verifyTicket(){
-    //     // 這裡要實作驗證票券的邏輯
-    // }
+    function verifyTicket(
+        uint256 id,
+        address releaser,
+        uint256 startTime,
+        uint256 endTime,
+        bool isUsed
+    ) public {
+        string memory result;
+
+        if (startTime < block.timestamp) {
+            result = "ticket unstarted";
+        } else if (endTime < block.timestamp) {
+            result = "ticket expired";
+        } else if (isUsed) {
+            result = "ticket used";
+        } else if (releaser != msg.sender) {
+            result = "ticket unauthorized";
+        } else {
+            result = "ticket verified";
+            for (uint256 i = 0; i < buyerProducts[msg.sender].length; i++) {
+                if (buyerProducts[msg.sender][i].id == id) {
+                    buyerProducts[msg.sender][i].isUsed = true;
+                    break;
+                }
+            }
+        }
+        emit TicketChecked(result);
+    }
 
     function withdrawBalance(uint256 value) public {
         require(balances[msg.sender] > 0, "Insufficient funds");
