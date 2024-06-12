@@ -9,7 +9,6 @@ import {
 
 const ProductCard = ({ product, actionBtn }) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  console.log(product);
 
   const getRandomImgUrl = () => {
     return `https://picsum.photos/id/${

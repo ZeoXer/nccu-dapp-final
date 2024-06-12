@@ -1,39 +1,19 @@
 import QrScanner from "qr-scanner";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useEth } from "../../contexts/EthContext";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const ScanTicket = () => {
   const [qrScanner, setQrScanner] = useState(null);
   const [isModalShow, setIsModalShow] = useState(false);
   const [isScan, setIsScan] = useState(false);
-  const [title, setTitle] = useState("");
-  const [buyer, setBuyer] = useState("");
-  const [releaser, setReleaser] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [message, setMessage] = useState("");
+  const [ticket, setTicket] = useState({});
   const {
-    state: { accounts },
+    state: { accounts, contract },
   } = useEth();
-
-  useEffect(() => {
-    const qrScannerElm = document.getElementById("qr-scanner");
-    const qrScanner = new QrScanner(
-      qrScannerElm,
-      (result) => {
-        const [title, buyer, releaser, endTime] = result.data.split("-");
-        setTitle(title);
-        setBuyer(buyer);
-        setReleaser(releaser);
-        setEndTime(endTime);
-        qrScanner.stop();
-        qrScannerElm.style.display = "none";
-        setIsScan(true);
-      },
-      {}
-    );
-    setQrScanner(qrScanner);
-  }, []);
 
   const OpenScannerButton = () => {
     return (
@@ -46,25 +26,21 @@ const ScanTicket = () => {
     );
   };
 
-  const checkTicket = () => {
-    if (!accounts) return false;
+  const checkTicket = useCallback(
+    async (id, releaser, start, end, isUsed) => {
+      if (!accounts) return false;
 
-    if (!title || !buyer || !releaser || !endTime) {
-      return "無效票券";
-    }
-
-    const isReleaser = releaser === accounts[0];
-    if (!isReleaser) return "非本單位發行之票券";
-
-    const isOnTime = new Date().getTime() < new Date(+endTime).getTime();
-    if (!isOnTime) return "票券已過期";
-
-    return "";
-  };
+      await contract.methods
+        .verifyTicket(id, releaser, start, end, isUsed)
+        .send({ from: accounts[0] });
+    },
+    [accounts, contract]
+  );
 
   const openScanner = () => {
     setIsModalShow(true);
-    document.getElementById("qr-scanner").style.display = "block";
+    document.getElementById("qr-scanner").style.visibility = "visable";
+    setMessage("掃描中...");
     qrScanner.start();
   };
 
@@ -73,6 +49,67 @@ const ScanTicket = () => {
     setIsScan(false);
     setIsModalShow(false);
   };
+
+  useEffect(() => {
+    const qrScannerElm = document.getElementById("qr-scanner");
+    const qrScanner = new QrScanner(
+      qrScannerElm,
+      (result) => {
+        const [id, releaser, buyer, title, start, end, isUsed] =
+          result.data.split("@");
+        setTicket({
+          buyer,
+          title,
+        });
+        console.log(id, releaser, buyer, title, start, end, isUsed === "true");
+        checkTicket(id, releaser, +start, +end, isUsed === "true");
+        qrScanner.stop();
+        qrScannerElm.style.visibility = "invisible";
+        setIsScan(true);
+      },
+      {}
+    );
+    setQrScanner(qrScanner);
+  }, [checkTicket, ticket]);
+
+  useEffect(() => {
+    const subscribeEvent = async () => {
+      contract?.events.TicketChecked({}, (error, event) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log(event.returnValues.message);
+          switch (event.returnValues.message) {
+            case "ticket verified":
+              setMessage("成功");
+              break;
+            case "ticket used":
+              setMessage("票券已使用");
+              break;
+            case "ticket unstarted":
+              setMessage("票券時間未開始");
+              break;
+            case "ticket expired":
+              setMessage("票券已過期");
+              break;
+            case "ticket unauthorized":
+              setMessage("非本單位發行之票券");
+              break;
+            default:
+              setMessage("掃描中...");
+              break;
+          }
+        }
+      });
+    };
+
+    subscribeEvent();
+
+    // Don't forget to unsubscribe when the component unmounts
+    return () => {
+      contract?.events.TicketChecked().unsubscribe();
+    };
+  }, [contract]);
 
   return (
     <>
@@ -97,25 +134,32 @@ const ScanTicket = () => {
               </button>
             </div>
             <div className="p-1">
-              <div className="flex items-center justify-center">
-                <video id="qr-scanner" className="size-80"></video>
+              <div className="flex items-center justify-center relative">
+                <video id="qr-scanner" className="size-40"></video>
+                {isScan && (
+                  <div className="absolute left-1/2 -translate-x-1/2">
+                    <MagnifyingGlassIcon className="w-20" />
+                  </div>
+                )}
               </div>
               {isScan &&
-                (!checkTicket() ? (
+                (message === "成功" ? (
                   <div className="px-3 py-4">
                     <h5 className="text-xl text-center mb-4">
-                      驗證 <span className="text-2xl font-bold">{title}</span>{" "}
-                      成功
+                      驗證{" "}
+                      <span className="text-2xl font-bold">
+                        {ticket?.title}
+                      </span>{" "}
+                      完成
                     </h5>
-                    <p className="text-gray-500 text-center mb-2 w-4/5 truncate">
-                      使用者 {buyer}
+                    <p className="text-gray-500 text-center mb-2">使用者</p>
+                    <p className="text-gray-500 mx-auto mb-4 w-44 truncate">
+                      {ticket?.buyer}
                     </p>
                   </div>
                 ) : (
                   <div className={"px-3 py-4"}>
-                    <h5 className="text-2xl text-center mb-4">
-                      {checkTicket()}
-                    </h5>
+                    <h5 className="text-2xl text-center mb-4">{message}</h5>
                   </div>
                 ))}
             </div>

@@ -42,7 +42,7 @@ const BoughtProductCard = ({ product }) => {
   const generateQRCode = useCallback(
     (product) => {
       toDataURL(
-        `${product.productName}-${accounts[0]}-${product.releaser}-${product.endTime}`,
+        `${product.id}@${product.releaser}@${accounts[0]}@${product.productName}@${product.startTime}@${product.endTime}@${product.isUsed}`,
         qrcodeOptions,
         (err, url) => {
           if (err) throw err;

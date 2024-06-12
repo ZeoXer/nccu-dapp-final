@@ -26,8 +26,8 @@ const ProductManage = () => {
 
   const removeResellProduct = async (id) => {
     if (!contract) return;
-
     await contract.methods.removeResellProduct(id).send({ from: accounts[0] });
+    window.location.reload();
   };
 
   useEffect(() => {

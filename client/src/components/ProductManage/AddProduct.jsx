@@ -173,7 +173,6 @@ const AddProduct = () => {
                     type="number"
                     value={productPrice}
                     onChange={(e) => setProductPrice(e.target.value)}
-                    min={new Date()}
                     step={0.01}
                     noEdit
                   />
